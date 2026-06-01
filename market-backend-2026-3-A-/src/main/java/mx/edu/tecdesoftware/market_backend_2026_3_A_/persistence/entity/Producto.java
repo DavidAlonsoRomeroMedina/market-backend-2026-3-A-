@@ -27,6 +27,11 @@ public class Producto {
     private Integer cantidad_stock;
     private Boolean estado;
 
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", insertable=false, updatable=false)
+    private Categoria categoria;
+
+
     public String getIdProducto() {
         return idProducto;
     }
