@@ -73,4 +73,13 @@ public class Cliente {
     public void setCorreoelectonico(String correoelectonico) {
         this.correoelectonico = correoelectonico;
     }
+
+    public List<Compra> getCompras() {
+        return compras;
+    }
+
+    public void setCompras(List<Compra> compras) {
+        this.compras = compras;
+    }
+
 }
