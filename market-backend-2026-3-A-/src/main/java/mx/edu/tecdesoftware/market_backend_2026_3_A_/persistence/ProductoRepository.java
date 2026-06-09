@@ -1,47 +1,49 @@
 package mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence;
 
+import mx.edu.tecdesoftware.market_backend_2026_3_A_.domain.Product;
+import mx.edu.tecdesoftware.market_backend_2026_3_A_.domain.repository.ProductRepository;
 import mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence.crud.ProductoCrudRepository;
 import mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence.entity.Producto;
+import mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository // Le indica a Spring que esta clase interactúa con la base de datos
-public class ProductoRepository {
+@Repository
+public class ProductoRepository implements ProductRepository {
 
-    @Autowired // Inyecta la dependencia automáticamente
+
+    @Autowired
     private ProductoCrudRepository productoCrudRepository;
-
-    // SELECT * productos
-    public List<Producto> getAll() {
-        return (List<Producto>) productoCrudRepository.findAll();
+    @Autowired
+    private ProductMapper productMapper;
+    //select *from productos
+    public List<Product> getAll(){
+        List<Producto> productos = (List<Producto>) productoCrudRepository.findAll();
+        return productMapper.toProducts(productos);
+    }
+    public Optional<List<Product>> getByCategory(int categoriId){
+        List<Producto> productos =  productoCrudRepository.findByIdCategoriaOrderByNombreAsc(categoriId);
+        return Optional.of(productMapper.toProducts(productos));
+    }
+    public Optional<List<Product>>getScarceProduct(int quantity){
+        Optional<List<Producto>> productos = productoCrudRepository.findByCantidadStockLessThanAndEstado(quantity, true);
+        return Optional.of(productMapper.toProducts(productos.get()));
+    }
+    //obtener un producto dado el id
+    public Optional<Product>getProductoById(int productId){
+        return productoCrudRepository.findById(productId).map(producto -> productMapper.toProduct(producto));
     }
 
-    public Optional<List<Producto>> getByCategoria(int idCategoria) {
-        // Tu interfaz devuelve un List, por lo que lo envolvemos en un Optional
-        // para respetar el tipo de retorno de este método.
-        return Optional.ofNullable(productoCrudRepository.findByIdCategoriaOrderByNombreAsc(idCategoria));
+    public Product save(Product product){
+
+        Producto producto= productMapper.toProducto(product);
+        return productMapper.toProduct(productoCrudRepository.save(producto));
     }
 
-    public Optional<List<Producto>> getEscasos(int cantidad) {
-        return productoCrudRepository.findByCantidadStockLessThanAndEstado(cantidad, true);
-    }
-
-    // Obtener un producto dado un ID
-    // Corregido: findById siempre devuelve un solo elemento (Optional<Producto>)
-    public Optional<Producto> getProductoById(int idProducto) {
-        return productoCrudRepository.findById(idProducto);
-    }
-
-    // Corregido: save devuelve la entidad guardada
-    public Producto save(Producto producto){
-        return productoCrudRepository.save(producto);
-    }
-
-    // Corregido: deleteById no retorna nada (void)
-    public void delete(int idProducto){
-        productoCrudRepository.deleteById(idProducto);
+    public void  delete(int productId){
+        productoCrudRepository.deleteById(productId);
     }
 }

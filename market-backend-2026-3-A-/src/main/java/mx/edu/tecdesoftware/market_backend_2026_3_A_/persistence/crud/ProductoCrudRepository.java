@@ -1,5 +1,6 @@
 package mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence.crud;
 
+import mx.edu.tecdesoftware.market_backend_2026_3_A_.domain.Product;
 import mx.edu.tecdesoftware.market_backend_2026_3_A_.persistence.entity.Producto;
 import org.springframework.data.repository.CrudRepository;
 
@@ -14,4 +15,11 @@ public interface ProductoCrudRepository extends CrudRepository<Producto, Integer
 
     // Obtener los productos escasos
     Optional<List<Producto>> findByCantidadStockLessThanAndEstado(int cantidad, boolean estado);
+
+    List<Product> getAll();
+    Optional<List<Product>> getByCategory(int categoryId);
+    Optional<List<Product>> getScarceproducts (int quantity);
+    Optional<List<Product>> getProduct(int productId);
+    Product save(Product product);
+    void delete(int productId);
 }
